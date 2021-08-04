@@ -70,7 +70,7 @@ namespace Estudos.WebApi.CatalogoJogos.Controllers
 
             return BadRequest(ObterErrosResposta());
         }
-        protected ActionResult<IEnumerable<T>> ResponseGet<T>(IEnumerable<T> result)
+        protected ActionResult<List<T>> ResponseGetList<T>(IEnumerable<T> result)
         {
 
             if (result == null || !result.Any())
@@ -87,7 +87,7 @@ namespace Estudos.WebApi.CatalogoJogos.Controllers
             return Ok(result);
         }
 
-        
+
         protected ActionResult ModelStateErroResponse()
         {
             NotificarErrosModelState();
