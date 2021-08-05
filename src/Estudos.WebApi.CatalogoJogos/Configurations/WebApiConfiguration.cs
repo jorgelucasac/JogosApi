@@ -20,6 +20,7 @@ namespace Estudos.WebApi.CatalogoJogos.Configurations
                 opt.SuppressModelStateInvalidFilter = true;
             });
 
+            services.AddVersionamento();
         }
 
         public static void UseApiConfiguration(this IApplicationBuilder app, IWebHostEnvironment env)
@@ -27,7 +28,6 @@ namespace Estudos.WebApi.CatalogoJogos.Configurations
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwaggerConfiguration();
             }
 
             app.UseHttpsRedirection();

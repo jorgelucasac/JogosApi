@@ -3,6 +3,7 @@ using Estudos.WebApi.CatalogoJogos.Configurations;
 using Estudos.WebApi.CatalogoJogos.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -43,8 +44,9 @@ namespace Estudos.WebApi.CatalogoJogos
             services.AddAutoMapper(typeof(Startup));
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider provider)
         {
+            app.UseSwaggerConfiguration(provider);
             app.UseApiConfiguration(env);
         }
     }

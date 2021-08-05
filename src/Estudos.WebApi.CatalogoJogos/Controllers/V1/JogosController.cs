@@ -17,7 +17,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Estudos.WebApi.CatalogoJogos.Controllers.V1
 {
-    [Route("api/v1/[controller]")]
+
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiConventionType(typeof(DefaultApiConventions))]
     public class JogosController : BaseApiController
     {
@@ -114,7 +116,7 @@ namespace Estudos.WebApi.CatalogoJogos.Controllers.V1
         }
 
         /// <summary>
-        /// atualize o preço de um jogo
+        /// atualize o parcialmente um jogo
         /// </summary>
         [HttpPatch("{id:guid}"), ValidacaoModelState]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
