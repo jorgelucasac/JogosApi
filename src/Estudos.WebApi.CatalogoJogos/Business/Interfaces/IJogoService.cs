@@ -8,16 +8,15 @@ using Estudos.WebApi.CatalogoJogos.Models.ViewModels;
 
 namespace Estudos.WebApi.CatalogoJogos.Business.Interfaces
 {
-    public interface IJogoService
+    public interface IJogoService : IDisposable
     {
         IQueryable<Jogo> Query();
-        Task<IEnumerable<Jogo>> ObterTodos();
-        Task<IEnumerable<Jogo>> Obter(JogosParametros jogosParametros);
-        Task<IEnumerable<Jogo>> Obter(int pagina, int quantidade);
-        Task<Jogo> ObterPorId(Guid id);
-        Task<bool> Existe(Guid id);
-        Task Adicionar(Jogo jogo);
-        Task Atualizar(Guid id, Jogo jogo);
-        Task<JogoViewModel> Remover(Guid id);
+        Task<IEnumerable<Jogo>> ObterTodosAsync();
+        Task<IEnumerable<Jogo>> ObterAsync(int pagina, int quantidade);
+        Task<Jogo> ObterPorIdAsync(Guid id);
+        Task<bool> ExisteAsync(Guid id);
+        Task<Jogo> AdicionarAsync(Jogo jogo);
+        Task AtualizarAsync(Guid id, Jogo jogo);
+        Task<Jogo> RemoverAsync(Guid id);
     }
 }

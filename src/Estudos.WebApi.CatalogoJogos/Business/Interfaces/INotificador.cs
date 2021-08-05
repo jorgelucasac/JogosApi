@@ -9,5 +9,6 @@ namespace Estudos.WebApi.CatalogoJogos.Business.Interfaces
 
         IList<Notificacao> ObterNotificacoes();
         void Notificar(Notificacao notificacao);
+        void Notificar(string chave, string mensagem);
     }
 }

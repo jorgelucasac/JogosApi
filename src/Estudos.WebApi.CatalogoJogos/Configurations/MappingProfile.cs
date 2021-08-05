@@ -13,6 +13,7 @@ namespace Estudos.WebApi.CatalogoJogos.Configurations
             CreateMap<Jogo, JogoPathInputModel>();
 
             CreateMap<JogoInputModel, Jogo>();
+            CreateMap<JogoPathInputModel, Jogo>();
         }
 
 

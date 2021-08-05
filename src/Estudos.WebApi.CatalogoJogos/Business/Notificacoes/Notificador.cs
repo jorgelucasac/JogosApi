@@ -26,8 +26,12 @@ namespace Estudos.WebApi.CatalogoJogos.Business.Notificacoes
 
         public void Notificar(Notificacao notificacao)
         {
-            throw new NotImplementedException();
+            _notificacoes.Add(notificacao);
         }
 
+        public void Notificar(string chave, string mensagem)
+        {
+            _notificacoes.Add(new Notificacao(chave, mensagem));
+        }
     }
 }
