@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using AspNetCore.IQueryable.Extensions;
 using AutoMapper;
 using Estudos.WebApi.CatalogoJogos.Business.Interfaces;
 using Estudos.WebApi.CatalogoJogos.Business.Models;
@@ -12,10 +13,12 @@ using Estudos.WebApi.CatalogoJogos.Models.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.EntityFrameworkCore;
 
 namespace Estudos.WebApi.CatalogoJogos.Controllers.V1
 {
     [Route("api/v1/[controller]")]
+    [ApiConventionType(typeof(DefaultApiConventions))]
     public class JogosController : BaseApiController
     {
         private readonly IJogoService _jogoService;
@@ -36,7 +39,7 @@ namespace Estudos.WebApi.CatalogoJogos.Controllers.V1
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<ActionResult<List<JogoViewModel>>> ObterTodos()
         {
-            var listaJogos = await _jogoService.ObterTodos();
+            var listaJogos = await _jogoService.ObterTodosAsync();
             return ResponseGetList(_mapper.Map<List<JogoViewModel>>(listaJogos));
         }
 
@@ -44,13 +47,13 @@ namespace Estudos.WebApi.CatalogoJogos.Controllers.V1
         /// Obtenha os jogos filtrados
         /// </summary>
         /// <returns>lista de <see cref="JogoViewModel"/></returns>
-        [HttpGet]
+        [HttpGet("busca-parametrizada")]
         [ProducesResponseType(typeof(List<JogoViewModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<ActionResult<List<JogoViewModel>>> Obter([FromQuery] JogosParametros parametros)
         {
-            var listaJogos = await _jogoService.Obter(parametros);
-            return ResponseGetList(_mapper.Map<List<JogoViewModel>>(listaJogos));
+            var listaJogos = _jogoService.Query().Apply(parametros);
+            return ResponseGetList(await _mapper.ProjectTo<JogoViewModel>(listaJogos).ToListAsync());
         }
 
 
@@ -58,12 +61,12 @@ namespace Estudos.WebApi.CatalogoJogos.Controllers.V1
         /// Obtenha os jogos paginados
         /// </summary>
         /// <returns>lista de <see cref="JogoViewModel"/></returns>
-        [HttpGet]
+        [HttpGet("obter-paginados")]
         [ProducesResponseType(typeof(List<JogoViewModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<ActionResult<List<JogoViewModel>>> Obter([FromQuery, Range(1, int.MaxValue)] int pagina, [FromQuery, Range(10, 50)] int quantidade)
         {
-            var listaJogos = await _jogoService.Obter(pagina, quantidade);
+            var listaJogos = await _jogoService.ObterAsync(pagina, quantidade);
             return ResponseGetList(_mapper.Map<List<JogoViewModel>>(listaJogos));
         }
 
@@ -75,9 +78,9 @@ namespace Estudos.WebApi.CatalogoJogos.Controllers.V1
         [HttpGet("{id:guid}")]
         [ProducesResponseType(typeof(List<JogoViewModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<JogoViewModel>> Obter(Guid id)
+        public async Task<ActionResult<JogoViewModel>> ObterPorId(Guid id)
         {
-            var jogo = await _jogoService.ObterPorId(id);
+            var jogo = await _jogoService.ObterPorIdAsync(id);
             return ResponseGet(_mapper.Map<JogoViewModel>(jogo));
         }
 
@@ -90,8 +93,8 @@ namespace Estudos.WebApi.CatalogoJogos.Controllers.V1
         public async Task<ActionResult<JogoViewModel>> Adicionar(JogoInputModel jogoInput)
         {
             var jogo = _mapper.Map<Jogo>(jogoInput);
-            await _jogoService.Adicionar(jogo).ConfigureAwait(false);
-            return ResponsePost(nameof(Obter), new { id = jogo.Id }, _mapper.Map<JogoViewModel>(jogo));
+            await _jogoService.AdicionarAsync(jogo).ConfigureAwait(false);
+            return ResponsePost(nameof(ObterPorId), new { id = jogo.Id }, _mapper.Map<JogoViewModel>(jogo));
         }
 
 
@@ -106,7 +109,7 @@ namespace Estudos.WebApi.CatalogoJogos.Controllers.V1
             if (await NaoExiste(id)) return ResponseNotFound();
 
             var jogo = _mapper.Map<Jogo>(jogoInput);
-            await _jogoService.Atualizar(id, jogo).ConfigureAwait(false);
+            await _jogoService.AtualizarAsync(id, jogo).ConfigureAwait(false);
             return ResponsePutPatch();
         }
 
@@ -116,18 +119,18 @@ namespace Estudos.WebApi.CatalogoJogos.Controllers.V1
         [HttpPatch("{id:guid}"), ValidacaoModelState]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType((typeof(string)), StatusCodes.Status404NotFound)]
-        public async Task<ActionResult> Atualizar(Guid id, JsonPatchDocument<JogoPathInputModel> input)
+        public async Task<ActionResult> Atualizar(Guid id, [FromBody] JsonPatchDocument<JogoPathInputModel> input)
         {
             if (await NaoExiste(id)) return ResponseNotFound();
 
 
-            var jogoAtual = await _jogoService.ObterPorId(id).ConfigureAwait(false);
+            var jogoAtual = await _jogoService.ObterPorIdAsync(id).ConfigureAwait(false);
             var jogoViewModel = _mapper.Map<JogoPathInputModel>(jogoAtual);
 
             input.ApplyTo(jogoViewModel);
             jogoAtual = _mapper.Map<Jogo>(jogoViewModel);
 
-            await _jogoService.Atualizar(id, jogoAtual).ConfigureAwait(false);
+            await _jogoService.AtualizarAsync(id, jogoAtual).ConfigureAwait(false);
             return ResponsePutPatch();
         }
 
@@ -135,21 +138,21 @@ namespace Estudos.WebApi.CatalogoJogos.Controllers.V1
         /// remova um jogo
         /// </summary>
         /// <returns><see cref="JogoViewModel"/></returns>
-        [HttpPatch("{id:guid}"), ValidacaoModelState]
+        [HttpDelete("{id:guid}"), ValidacaoModelState]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType((typeof(string)), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<JogoViewModel>> Remover(Guid id)
         {
             if (await NaoExiste(id)) return ResponseNotFound();
 
-            var jogo = await _jogoService.Remover(id).ConfigureAwait(false);
-            return ResponseDelete(jogo);
+            var jogo = await _jogoService.RemoverAsync(id).ConfigureAwait(false);
+            return ResponseDelete(_mapper.Map<JogoViewModel>(jogo));
         }
 
 
         private async Task<bool> NaoExiste(Guid id)
         {
-            return !await _jogoService.Existe(id);
+            return !await _jogoService.ExisteAsync(id);
         }
     }
 }

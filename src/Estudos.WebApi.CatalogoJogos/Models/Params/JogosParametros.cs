@@ -18,7 +18,7 @@ namespace Estudos.WebApi.CatalogoJogos.Models.Params
         public double? PrecoMinimo { get; set; }
 
         [QueryOperator(Operator = WhereOperator.LessThanOrEqualTo, HasName = "Preco"), FromQuery(Name = "preco_maximo")]
-        public int? PrecoMaximo { get; set; }
+        public double? PrecoMaximo { get; set; }
 
         [QueryOperator(Operator = WhereOperator.Equals, HasName = "Preco"), FromQuery(Name = "preco")]
         public double? Preco { get; set; }
