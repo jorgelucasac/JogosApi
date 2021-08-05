@@ -1,6 +1,9 @@
 using System;
 using System.IO;
 using System.Reflection;
+using AutoMapper;
+using Estudos.WebApi.CatalogoJogos.Business.Interfaces;
+using Estudos.WebApi.CatalogoJogos.Business.Notificacoes;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -24,11 +27,15 @@ namespace Estudos.WebApi.CatalogoJogos
         {
 
             services.AddControllers();
+            services.AddAutoMapper(typeof(Startup));
+
 
             services.Configure<ApiBehaviorOptions>(opt =>
             {
                 opt.SuppressModelStateInvalidFilter = true;
             });
+
+            services.AddScoped<INotificador, Notificador>();
 
             services.AddSwaggerGen(c =>
             {

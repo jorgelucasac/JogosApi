@@ -16,7 +16,7 @@ namespace Estudos.WebApi.CatalogoJogos.Controllers
         {
             _notificador = notificador;
         }
-        
+
 
         protected bool OperacaoValida()
         {
@@ -82,7 +82,7 @@ namespace Estudos.WebApi.CatalogoJogos.Controllers
         protected ActionResult<T> ResponseGet<T>(T result)
         {
             if (result == null)
-                return NotFound();
+                return ResponseNotFound();
 
             return Ok(result);
         }
@@ -99,6 +99,11 @@ namespace Estudos.WebApi.CatalogoJogos.Controllers
             _notificador.Notificar(new Notificacao(chave, mensagem));
         }
 
+        protected void NotificarErro(string mensagem)
+        {
+            _notificador.Notificar(new Notificacao(string.Empty, mensagem));
+        }
+
         private void NotificarErrosModelState()
         {
             var erros = ModelState.Values.SelectMany(v => v.Errors);
@@ -109,7 +114,7 @@ namespace Estudos.WebApi.CatalogoJogos.Controllers
             }
         }
 
-        private  Dictionary<string, string[]> ObterNotificaCacoesPorChave()
+        private Dictionary<string, string[]> ObterNotificaCacoesPorChave()
         {
             var strings = _notificador.ObterNotificacoes().Select(s => s.Chave).Distinct();
             var dictionary = new Dictionary<string, string[]>();
@@ -129,6 +134,12 @@ namespace Estudos.WebApi.CatalogoJogos.Controllers
             {
                 Title = "Erros de validação encontrados"
             };
+        }
+
+        protected ActionResult ResponseNotFound(string mensagem = null)
+        {
+
+            return NotFound(string.IsNullOrEmpty(mensagem) ? "Registro não encontrado" : mensagem);
         }
     }
 }
