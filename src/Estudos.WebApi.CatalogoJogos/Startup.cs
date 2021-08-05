@@ -4,13 +4,19 @@ using System.Reflection;
 using AutoMapper;
 using Estudos.WebApi.CatalogoJogos.Business.Interfaces;
 using Estudos.WebApi.CatalogoJogos.Business.Notificacoes;
+using Estudos.WebApi.CatalogoJogos.Business.Services;
+using Estudos.WebApi.CatalogoJogos.Data;
+using Estudos.WebApi.CatalogoJogos.Data.Repository;
+using Estudos.WebApi.CatalogoJogos.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
 
 namespace Estudos.WebApi.CatalogoJogos
 {
@@ -26,8 +32,16 @@ namespace Estudos.WebApi.CatalogoJogos
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddControllers();
+            services.AddControllers()
+                .AddNewtonsoftJson(o => o.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
+
             services.AddAutoMapper(typeof(Startup));
+
+
+            services.AddDbContext<JogosContext>(opt =>
+            {
+                opt.UseSqlServer(Configuration.GetConnectionString("WebApiDbConnection"));
+            });
 
 
             services.Configure<ApiBehaviorOptions>(opt =>
@@ -35,7 +49,12 @@ namespace Estudos.WebApi.CatalogoJogos
                 opt.SuppressModelStateInvalidFilter = true;
             });
 
+            services.AddScoped<JogosContext>();
             services.AddScoped<INotificador, Notificador>();
+            services.AddScoped<IJogoRepository, JogoRepository>();
+            services.AddScoped<IJogoService, JogoService>();
+
+
 
             services.AddSwaggerGen(c =>
             {
@@ -62,6 +81,8 @@ namespace Estudos.WebApi.CatalogoJogos
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseMiddleware<ErrorHandlerMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {
