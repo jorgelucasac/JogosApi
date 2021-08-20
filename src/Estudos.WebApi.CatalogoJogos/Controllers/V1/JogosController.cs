@@ -19,7 +19,7 @@ namespace Estudos.WebApi.CatalogoJogos.Controllers.V1
 {
 
     [ApiVersion("1.0")]
-    [Route("api/v{version:apiVersion}/[controller]")]
+    //[Route("api/v{version:apiVersion}/[controller]")]
     [ApiConventionType(typeof(DefaultApiConventions))]
     public class JogosController : BaseApiController
     {
@@ -36,6 +36,8 @@ namespace Estudos.WebApi.CatalogoJogos.Controllers.V1
         /// Obtenha todos os jogos
         /// </summary>
         /// <returns>lista de <see cref="JogoViewModel"/></returns>
+        /// <response code="200">Retorna todos o jogos</response>
+        /// <response code="204">Caso não exista registros</response>
         [HttpGet]
         [ProducesResponseType(typeof(List<JogoViewModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -49,6 +51,8 @@ namespace Estudos.WebApi.CatalogoJogos.Controllers.V1
         /// Obtenha os jogos filtrados
         /// </summary>
         /// <returns>lista de <see cref="JogoViewModel"/></returns>
+        /// <response code="200">Retorna os jogos encontrados</response>
+        /// <response code="204">Caso não exista registros para os parametros informados</response>
         [HttpGet("busca-parametrizada")]
         [ProducesResponseType(typeof(List<JogoViewModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -62,7 +66,12 @@ namespace Estudos.WebApi.CatalogoJogos.Controllers.V1
         /// <summary>
         /// Obtenha os jogos paginados
         /// </summary>
+        /// 
         /// <returns>lista de <see cref="JogoViewModel"/></returns>
+        /// <param name="pagina">Pagina desejada</param>
+        /// <param name="quantidade">Quantidade de itens por página</param>
+        /// <response code="200">Retorna os jogos encontrados</response>
+        /// <response code="204">Caso não exista registros</response>
         [HttpGet("obter-paginados")]
         [ProducesResponseType(typeof(List<JogoViewModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -76,10 +85,13 @@ namespace Estudos.WebApi.CatalogoJogos.Controllers.V1
         /// <summary>
         /// Obtenha os dados de um jogo
         /// </summary>
+        /// <param name="id">Id do jogo desejado</param>
         /// <returns><see cref="JogoViewModel"/></returns>
+        /// <response code="200">Retorna o jogo encontrado</response>
+        /// <response code="404">Caso não exista registro com com o id informado</response>
         [HttpGet("{id:guid}")]
-        [ProducesResponseType(typeof(List<JogoViewModel>), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(JogoViewModel), StatusCodes.Status200OK)]
+        [ResponseNotFound]
         public async Task<ActionResult<JogoViewModel>> ObterPorId(Guid id)
         {
             var jogo = await _jogoService.ObterPorIdAsync(id);
@@ -90,8 +102,11 @@ namespace Estudos.WebApi.CatalogoJogos.Controllers.V1
         /// realize o cadastro de um jogo
         /// </summary>
         /// <returns><see cref="JogoViewModel"/></returns>
+        /// <response code="201">Retorna o jogo cadastrado</response>
+        /// <response code="400">Caso alguma validação não seja atendida</response>
         [HttpPost, ValidacaoModelState]
         [ProducesResponseType(typeof(JogoViewModel), StatusCodes.Status201Created)]
+        [ResponseBadRequest]
         public async Task<ActionResult<JogoViewModel>> Adicionar(JogoInputModel jogoInput)
         {
             var jogo = _mapper.Map<Jogo>(jogoInput);
@@ -103,9 +118,14 @@ namespace Estudos.WebApi.CatalogoJogos.Controllers.V1
         /// <summary>
         /// atualize os dados de um jogo
         /// </summary>
+        /// <param name="id">Id do jogo que será atualizado</param>
+        /// <param name="jogoInput">novos dados do jogo</param>
+        /// <response code="204">Quando o jogo for atualizado com sucesso</response>
+        /// <response code="404">Caso não exista registro com com o id informado</response>
+        /// <response code="400">Caso alguma validação não seja atendida</response>
         [HttpPut("{id:guid}"), ValidacaoModelState]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType((typeof(string)), StatusCodes.Status404NotFound)]
+        [ResponseNotFound, ResponseBadRequest]
         public async Task<ActionResult> Atualizar(Guid id, JogoInputModel jogoInput)
         {
             if (await NaoExiste(id)) return ResponseNotFound();
@@ -118,9 +138,14 @@ namespace Estudos.WebApi.CatalogoJogos.Controllers.V1
         /// <summary>
         /// atualize o parcialmente um jogo
         /// </summary>
+        /// <param name="id">Id do jogo que será atualizado</param>
+        /// <param name="input">campo/valor a ser atualizado</param>
+        /// <response code="204">Quando o jogo for atualizado com sucesso</response>
+        /// <response code="404">Caso não exista registro com com o id informado</response>
+        /// <response code="400">Caso alguma validação não seja atendida</response>
         [HttpPatch("{id:guid}"), ValidacaoModelState]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType((typeof(string)), StatusCodes.Status404NotFound)]
+        [ResponseNotFound, ResponseBadRequest]
         public async Task<ActionResult> Atualizar(Guid id, [FromBody] JsonPatchDocument<JogoPathInputModel> input)
         {
             if (await NaoExiste(id)) return ResponseNotFound();
@@ -139,10 +164,14 @@ namespace Estudos.WebApi.CatalogoJogos.Controllers.V1
         /// <summary>
         /// remova um jogo
         /// </summary>
+        /// <param name="id">Id do jogo que será removido</param>
         /// <returns><see cref="JogoViewModel"/></returns>
+        /// <response code="204">Quando o jogo for atualizado com sucesso</response>
+        /// <response code="404">Caso não exista registro com com o id informado</response>
+        /// <response code="400">Caso alguma validação não seja atendida</response>
         [HttpDelete("{id:guid}"), ValidacaoModelState]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType((typeof(string)), StatusCodes.Status404NotFound)]
+        [ResponseNotFound, ResponseBadRequest]
         public async Task<ActionResult<JogoViewModel>> Remover(Guid id)
         {
             if (await NaoExiste(id)) return ResponseNotFound();

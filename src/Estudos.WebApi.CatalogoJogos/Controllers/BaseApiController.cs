@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Estudos.WebApi.CatalogoJogos.Controllers
 {
     [ApiController]
+    [Route("api/v{version:apiVersion}/[controller]")]
     public abstract class BaseApiController : ControllerBase
     {
         private readonly INotificador _notificador;
