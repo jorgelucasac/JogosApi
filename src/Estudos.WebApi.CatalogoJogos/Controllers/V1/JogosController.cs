@@ -11,31 +11,29 @@ using Estudos.WebApi.CatalogoJogos.Models.InputModels;
 using Estudos.WebApi.CatalogoJogos.Models.Params;
 using Estudos.WebApi.CatalogoJogos.Models.ViewModels;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Estudos.WebApi.CatalogoJogos.Controllers.V1
 {
-
     [ApiVersion("1.0")]
-    //[Route("api/v{version:apiVersion}/[controller]")]
     [ApiConventionType(typeof(DefaultApiConventions))]
     public class JogosController : BaseApiController
     {
         private readonly IJogoService _jogoService;
         private readonly IMapper _mapper;
+
         public JogosController(INotificador notificador, IJogoService jogoService, IMapper mapper) : base(notificador)
         {
             _jogoService = jogoService;
             _mapper = mapper;
         }
 
-
         /// <summary>
-        /// Obtenha todos os jogos
+        ///     Obtenha todos os jogos
         /// </summary>
-        /// <returns>lista de <see cref="JogoViewModel"/></returns>
+        /// <returns>lista de <see cref="JogoViewModel" /></returns>
         /// <response code="200">Retorna todos o jogos</response>
         /// <response code="204">Caso não exista registros</response>
         [HttpGet]
@@ -48,9 +46,9 @@ namespace Estudos.WebApi.CatalogoJogos.Controllers.V1
         }
 
         /// <summary>
-        /// Obtenha os jogos filtrados
+        ///     Obtenha os jogos filtrados
         /// </summary>
-        /// <returns>lista de <see cref="JogoViewModel"/></returns>
+        /// <returns>lista de <see cref="JogoViewModel" /></returns>
         /// <response code="200">Retorna os jogos encontrados</response>
         /// <response code="204">Caso não exista registros para os parametros informados</response>
         [HttpGet("busca-parametrizada")]
@@ -62,12 +60,10 @@ namespace Estudos.WebApi.CatalogoJogos.Controllers.V1
             return ResponseGetList(await _mapper.ProjectTo<JogoViewModel>(listaJogos).ToListAsync());
         }
 
-
         /// <summary>
-        /// Obtenha os jogos paginados
+        ///     Obtenha os jogos paginados
         /// </summary>
-        /// 
-        /// <returns>lista de <see cref="JogoViewModel"/></returns>
+        /// <returns>lista de <see cref="JogoViewModel" /></returns>
         /// <param name="pagina">Pagina desejada</param>
         /// <param name="quantidade">Quantidade de itens por página</param>
         /// <response code="200">Retorna os jogos encontrados</response>
@@ -75,18 +71,20 @@ namespace Estudos.WebApi.CatalogoJogos.Controllers.V1
         [HttpGet("obter-paginados")]
         [ProducesResponseType(typeof(List<JogoViewModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<ActionResult<List<JogoViewModel>>> Obter([FromQuery, Range(1, int.MaxValue)] int pagina, [FromQuery, Range(10, 50)] int quantidade)
+        public async Task<ActionResult<List<JogoViewModel>>> Obter([FromQuery] [Range(1, int.MaxValue)] int pagina,
+            [FromQuery] [Range(10, 50)] int quantidade)
         {
             var listaJogos = await _jogoService.ObterAsync(pagina, quantidade);
             return ResponseGetList(_mapper.Map<List<JogoViewModel>>(listaJogos));
         }
 
-
         /// <summary>
-        /// Obtenha os dados de um jogo
+        ///     Obtenha os dados de um jogo
         /// </summary>
         /// <param name="id">Id do jogo desejado</param>
-        /// <returns><see cref="JogoViewModel"/></returns>
+        /// <returns>
+        ///     <see cref="JogoViewModel" />
+        /// </returns>
         /// <response code="200">Retorna o jogo encontrado</response>
         /// <response code="404">Caso não exista registro com com o id informado</response>
         [HttpGet("{id:guid}")]
@@ -99,12 +97,15 @@ namespace Estudos.WebApi.CatalogoJogos.Controllers.V1
         }
 
         /// <summary>
-        /// realize o cadastro de um jogo
+        ///     realize o cadastro de um jogo
         /// </summary>
-        /// <returns><see cref="JogoViewModel"/></returns>
+        /// <returns>
+        ///     <see cref="JogoViewModel" />
+        /// </returns>
         /// <response code="201">Retorna o jogo cadastrado</response>
         /// <response code="400">Caso alguma validação não seja atendida</response>
-        [HttpPost, ValidacaoModelState]
+        [HttpPost]
+        [ValidacaoModelState]
         [ProducesResponseType(typeof(JogoViewModel), StatusCodes.Status201Created)]
         [ResponseBadRequest]
         public async Task<ActionResult<JogoViewModel>> Adicionar(JogoInputModel jogoInput)
@@ -114,18 +115,19 @@ namespace Estudos.WebApi.CatalogoJogos.Controllers.V1
             return ResponsePost(nameof(ObterPorId), new { id = jogo.Id }, _mapper.Map<JogoViewModel>(jogo));
         }
 
-
         /// <summary>
-        /// atualize os dados de um jogo
+        ///     atualize os dados de um jogo
         /// </summary>
         /// <param name="id">Id do jogo que será atualizado</param>
         /// <param name="jogoInput">novos dados do jogo</param>
         /// <response code="204">Quando o jogo for atualizado com sucesso</response>
         /// <response code="404">Caso não exista registro com com o id informado</response>
         /// <response code="400">Caso alguma validação não seja atendida</response>
-        [HttpPut("{id:guid}"), ValidacaoModelState]
+        [HttpPut("{id:guid}")]
+        [ValidacaoModelState]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ResponseNotFound, ResponseBadRequest]
+        [ResponseNotFound]
+        [ResponseBadRequest]
         public async Task<ActionResult> Atualizar(Guid id, JogoInputModel jogoInput)
         {
             if (await NaoExiste(id)) return ResponseNotFound();
@@ -136,20 +138,21 @@ namespace Estudos.WebApi.CatalogoJogos.Controllers.V1
         }
 
         /// <summary>
-        /// atualize o parcialmente um jogo
+        ///     atualize o parcialmente um jogo
         /// </summary>
         /// <param name="id">Id do jogo que será atualizado</param>
         /// <param name="input">campo/valor a ser atualizado</param>
         /// <response code="204">Quando o jogo for atualizado com sucesso</response>
         /// <response code="404">Caso não exista registro com com o id informado</response>
         /// <response code="400">Caso alguma validação não seja atendida</response>
-        [HttpPatch("{id:guid}"), ValidacaoModelState]
+        [HttpPatch("{id:guid}")]
+        [ValidacaoModelState]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ResponseNotFound, ResponseBadRequest]
+        [ResponseNotFound]
+        [ResponseBadRequest]
         public async Task<ActionResult> Atualizar(Guid id, [FromBody] JsonPatchDocument<JogoPathInputModel> input)
         {
             if (await NaoExiste(id)) return ResponseNotFound();
-
 
             var jogoAtual = await _jogoService.ObterPorIdAsync(id).ConfigureAwait(false);
             var jogoViewModel = _mapper.Map<JogoPathInputModel>(jogoAtual);
@@ -162,16 +165,20 @@ namespace Estudos.WebApi.CatalogoJogos.Controllers.V1
         }
 
         /// <summary>
-        /// remova um jogo
+        ///     remova um jogo
         /// </summary>
         /// <param name="id">Id do jogo que será removido</param>
-        /// <returns><see cref="JogoViewModel"/></returns>
+        /// <returns>
+        ///     <see cref="JogoViewModel" />
+        /// </returns>
         /// <response code="204">Quando o jogo for atualizado com sucesso</response>
         /// <response code="404">Caso não exista registro com com o id informado</response>
         /// <response code="400">Caso alguma validação não seja atendida</response>
-        [HttpDelete("{id:guid}"), ValidacaoModelState]
+        [HttpDelete("{id:guid}")]
+        [ValidacaoModelState]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ResponseNotFound, ResponseBadRequest]
+        [ResponseNotFound]
+        [ResponseBadRequest]
         public async Task<ActionResult<JogoViewModel>> Remover(Guid id)
         {
             if (await NaoExiste(id)) return ResponseNotFound();
@@ -179,7 +186,6 @@ namespace Estudos.WebApi.CatalogoJogos.Controllers.V1
             var jogo = await _jogoService.RemoverAsync(id).ConfigureAwait(false);
             return ResponseDelete(_mapper.Map<JogoViewModel>(jogo));
         }
-
 
         private async Task<bool> NaoExiste(Guid id)
         {
