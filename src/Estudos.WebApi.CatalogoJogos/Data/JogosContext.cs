@@ -11,7 +11,6 @@ namespace Estudos.WebApi.CatalogoJogos.Data
         {
         }
 
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(JogosContext).Assembly);
@@ -20,7 +19,6 @@ namespace Estudos.WebApi.CatalogoJogos.Data
             modelBuilder.Entity<Jogo>()
                 .HasQueryFilter(a => a.Ativo);
         }
-
 
         public DbSet<Jogo> Jogos { get; set; }
 
@@ -40,8 +38,6 @@ namespace Estudos.WebApi.CatalogoJogos.Data
                         && !propriedade.GetMaxLength().HasValue)
                         //propriedade.SetMaxLength(100);
                         propriedade.SetColumnType("VARCHAR(100)");
-
-
                 //foreach (var propriedade in propriedadesDecimais)
                 //{
                 //    if (!propriedade.GetPrecision().HasValue)

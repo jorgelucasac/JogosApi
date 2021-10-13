@@ -54,7 +54,6 @@ namespace Estudos.WebApi.CatalogoJogos.Business.Services
                 return jogo;
             }
 
-
             await _jogoRepository.AdicionarAsync(jogo);
             return jogo;
         }
@@ -78,7 +77,6 @@ namespace Estudos.WebApi.CatalogoJogos.Business.Services
                 _notificador.Notificar("Jogo", "O Jogo só pode ser apagado em até 24h após data de cadastro");
                 return jogo;
             }
-
 
             jogo.Desativar();
             await _jogoRepository.AtualizarAsync(jogo);

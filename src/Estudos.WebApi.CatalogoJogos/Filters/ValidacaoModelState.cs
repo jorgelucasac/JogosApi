@@ -26,7 +26,6 @@ namespace Estudos.WebApi.CatalogoJogos.Filters
             return ObterErrosResposta(dictionary);
         }
 
-
         private ValidationProblemDetails ObterErrosResposta(Dictionary<string, string[]> erros)
         {
             return new ValidationProblemDetails(erros)
