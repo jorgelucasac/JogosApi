@@ -12,9 +12,7 @@ namespace Estudos.WebApi.CatalogoJogos.Filters
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             if (!context.ModelState.IsValid)
-            {
                 context.Result = new BadRequestObjectResult(ObterErros(context.ModelState));
-            }
         }
 
         private ValidationProblemDetails ObterErros(ModelStateDictionary modelState)
@@ -22,14 +20,11 @@ namespace Estudos.WebApi.CatalogoJogos.Filters
             var keys = modelState.Keys.Distinct();
             var dictionary = new Dictionary<string, string[]>();
             foreach (var key in keys)
-            {
                 dictionary[key] = modelState[key].Errors
                     .Select(erro => erro.Exception == null ? erro.ErrorMessage : erro.Exception.Message)
                     .ToArray();
-            }
             return ObterErrosResposta(dictionary);
         }
-
 
 
         private ValidationProblemDetails ObterErrosResposta(Dictionary<string, string[]> erros)
@@ -40,5 +35,4 @@ namespace Estudos.WebApi.CatalogoJogos.Filters
             };
         }
     }
-
 }

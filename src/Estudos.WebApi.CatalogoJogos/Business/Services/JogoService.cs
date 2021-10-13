@@ -46,7 +46,7 @@ namespace Estudos.WebApi.CatalogoJogos.Business.Services
         public async Task<Jogo> AdicionarAsync(Jogo jogo)
         {
             var jogoAtual = await _jogoRepository
-                    .BuscarAsync(a => a.Nome == jogo.Nome && a.Produtora == jogo.Produtora);
+                .BuscarAsync(a => a.Nome == jogo.Nome && a.Produtora == jogo.Produtora);
 
             if (jogoAtual.Any())
             {
@@ -89,7 +89,5 @@ namespace Estudos.WebApi.CatalogoJogos.Business.Services
         {
             _jogoRepository?.Dispose();
         }
-
-
     }
 }

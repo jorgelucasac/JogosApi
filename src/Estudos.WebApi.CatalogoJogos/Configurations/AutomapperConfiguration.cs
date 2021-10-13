@@ -9,10 +9,7 @@ namespace Estudos.WebApi.CatalogoJogos.Configurations
         public static void ConfigureAutomapper(this IServiceCollection services)
         {
             // Auto Mapper Configurations
-            var mappingConfig = new MapperConfiguration(mc =>
-            {
-                mc.AddProfile(new MappingProfile());
-            });
+            var mappingConfig = new MapperConfiguration(mc => { mc.AddProfile(new MappingProfile()); });
 
             IMapper mapper = new Mapper(mappingConfig);
             services.TryAddSingleton(mapper);

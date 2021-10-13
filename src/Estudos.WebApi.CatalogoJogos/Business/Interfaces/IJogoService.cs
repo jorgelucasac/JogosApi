@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Estudos.WebApi.CatalogoJogos.Business.Models;
-using Estudos.WebApi.CatalogoJogos.Models.Params;
-using Estudos.WebApi.CatalogoJogos.Models.ViewModels;
 
 namespace Estudos.WebApi.CatalogoJogos.Business.Interfaces
 {

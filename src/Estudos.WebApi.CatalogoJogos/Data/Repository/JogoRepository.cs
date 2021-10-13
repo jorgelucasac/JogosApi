@@ -9,7 +9,9 @@ namespace Estudos.WebApi.CatalogoJogos.Data.Repository
 {
     public class JogoRepository : Repository<Jogo>, IJogoRepository
     {
-        public JogoRepository(JogosContext context) : base(context) { }
+        public JogoRepository(JogosContext context) : base(context)
+        {
+        }
 
         public async Task<IEnumerable<Jogo>> ObterAsync(int pagina, int quantidade)
         {
@@ -17,8 +19,6 @@ namespace Estudos.WebApi.CatalogoJogos.Data.Repository
                 .Paginate(quantidade, pagina)
                 .AsNoTracking()
                 .ToListAsync();
-            ;
-
         }
     }
 }

@@ -8,7 +8,8 @@ namespace Estudos.WebApi.CatalogoJogos.Filters
         public ResponseNotFound() : base(typeof(string), StatusCodes.Status404NotFound)
         {
         }
-    } 
+    }
+
     public class ResponseBadRequest : ProducesResponseTypeAttribute
     {
         public ResponseBadRequest() : base(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)

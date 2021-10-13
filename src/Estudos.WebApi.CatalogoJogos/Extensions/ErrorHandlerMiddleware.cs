@@ -27,7 +27,8 @@ namespace Estudos.WebApi.CatalogoJogos.Extensions
                 var response = context.Response;
                 response.ContentType = "application/json";
                 response.StatusCode = StatusCodes.Status500InternalServerError;
-                await response.WriteAsJsonAsync(new { Title = "Ocorreu um erro na sua requisição. Por favor, tente novamente" });
+                await response.WriteAsJsonAsync(new
+                    { Title = "Ocorreu um erro na sua requisição. Por favor, tente novamente" });
             }
         }
     }

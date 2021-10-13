@@ -19,6 +19,7 @@ namespace Estudos.WebApi.CatalogoJogos.Data.Repository
             Context = context;
             DbSet = Context.Set<TEntidade>();
         }
+
         public IQueryable<TEntidade> Query()
         {
             return DbSet.AsQueryable();
@@ -50,7 +51,7 @@ namespace Estudos.WebApi.CatalogoJogos.Data.Repository
             DbSet.Update(entidade);
             await SaveChangesAsync();
         }
-        
+
         public async Task<IEnumerable<TEntidade>> BuscarAsync(Expression<Func<TEntidade, bool>> expression)
         {
             return await DbSet.Where(expression).AsNoTrackingWithIdentityResolution().ToListAsync();

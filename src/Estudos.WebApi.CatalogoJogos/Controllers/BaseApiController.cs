@@ -18,19 +18,14 @@ namespace Estudos.WebApi.CatalogoJogos.Controllers
             _notificador = notificador;
         }
 
-
         protected bool OperacaoValida()
         {
-            return (!_notificador.TemNotificacoes());
+            return !_notificador.TemNotificacoes();
         }
-
 
         protected ActionResult ResponsePutPatch()
         {
-            if (OperacaoValida())
-            {
-                return NoContent();
-            }
+            if (OperacaoValida()) return NoContent();
 
             return BadRequest(new ValidationProblemDetails(ObterNotificaCacoesPorChave()));
         }
@@ -43,7 +38,6 @@ namespace Estudos.WebApi.CatalogoJogos.Controllers
                 return NoContent();
 
             return Ok(item);
-
         }
 
         protected ActionResult<T> ResponsePost<T>(string action, object route, T result)
@@ -71,9 +65,9 @@ namespace Estudos.WebApi.CatalogoJogos.Controllers
 
             return BadRequest(ObterErrosResposta());
         }
+
         protected ActionResult<List<T>> ResponseGetList<T>(IEnumerable<T> result)
         {
-
             if (result == null || !result.Any())
                 return NoContent();
 
@@ -87,7 +81,6 @@ namespace Estudos.WebApi.CatalogoJogos.Controllers
 
             return Ok(result);
         }
-
 
         protected ActionResult ModelStateErroResponse()
         {
@@ -122,10 +115,11 @@ namespace Estudos.WebApi.CatalogoJogos.Controllers
             foreach (var str in strings)
             {
                 var key = str;
-                dictionary[key] = this._notificador.ObterNotificacoes()
+                dictionary[key] = _notificador.ObterNotificacoes()
                     .Where(w => w.Chave.Equals(key, StringComparison.Ordinal))
                     .Select(s => s.Valor).ToArray();
             }
+
             return dictionary;
         }
 
@@ -139,7 +133,6 @@ namespace Estudos.WebApi.CatalogoJogos.Controllers
 
         protected ActionResult ResponseNotFound(string mensagem = null)
         {
-
             return NotFound(string.IsNullOrEmpty(mensagem) ? "Registro não encontrado" : mensagem);
         }
     }

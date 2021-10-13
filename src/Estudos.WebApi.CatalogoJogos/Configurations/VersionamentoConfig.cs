@@ -9,7 +9,6 @@ namespace Estudos.WebApi.CatalogoJogos.Configurations
     {
         public static void AddVersionamento(this IServiceCollection services)
         {
-
             services.AddApiVersioning(options =>
             {
                 //assume a versão default quando não especificar a versão

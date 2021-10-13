@@ -13,7 +13,7 @@ namespace Estudos.WebApi.CatalogoJogos.Models.InputModels
         public string Produtora { get; set; }
 
         [Required(ErrorMessage = "O campo {0} é obrigatório")]
-        [Range(1,  1000, ErrorMessage = "O campo {0} deve ter entre {1} e {2} reais")]
+        [Range(1, 1000, ErrorMessage = "O campo {0} deve ter entre {1} e {2} reais")]
         public double Preco { get; set; }
     }
 

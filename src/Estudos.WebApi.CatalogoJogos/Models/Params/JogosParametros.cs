@@ -27,6 +27,7 @@ namespace Estudos.WebApi.CatalogoJogos.Models.Params
         [QueryOperator(Operator = WhereOperator.Equals, HasName = "Preco")]
         [FromQuery(Name = "preco")]
         public double? Preco { get; set; }
+
         public int? Offset { get; set; }
         public int? Limit { get; set; } = 10;
         public string Sort { get; set; }

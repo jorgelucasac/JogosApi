@@ -4,11 +4,10 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Estudos.WebApi.CatalogoJogos.Data.Mappings
 {
-    public class JogoMapping:IEntityTypeConfiguration<Jogo>
+    public class JogoMapping : IEntityTypeConfiguration<Jogo>
     {
         public void Configure(EntityTypeBuilder<Jogo> builder)
         {
-
             builder.HasKey(a => a.Id);
             builder.Property(a => a.Nome)
                 .HasColumnType("varchar(50)")
@@ -20,7 +19,6 @@ namespace Estudos.WebApi.CatalogoJogos.Data.Mappings
 
             builder.Property(a => a.Preco)
                 .IsRequired();
-            
 
             builder.ToTable("Jogo");
         }
