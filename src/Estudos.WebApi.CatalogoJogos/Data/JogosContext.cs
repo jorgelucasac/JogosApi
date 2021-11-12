@@ -7,9 +7,7 @@ namespace Estudos.WebApi.CatalogoJogos.Data
     //Add-Migration Jogos -OutputDir "Data/Migrations"
     public class JogosContext : DbContext
     {
-        public JogosContext(DbContextOptions<JogosContext> options) : base(options)
-        {
-        }
+        public JogosContext(DbContextOptions<JogosContext> options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
